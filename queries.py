@@ -1,3 +1,6 @@
+import db
+
+
 def brand_exists(cursor, brand_id):
     return (
         cursor.execute(
@@ -20,19 +23,32 @@ def user_has_code_with_the_brand(cursor, user_id, brand_id):
     )
 
 
-def select_policy_id(cursor, brand_id):
-    row = cursor.execute(
-        "SELECT id FROM brand_policy WHERE brand_id = ?",
-        (brand_id,),
-    ).fetchone()
+def select_policy_id(brand_id):
+    row = (
+        db.get_db()
+        .execute(
+            "SELECT id FROM brand_policy WHERE brand_id = ?",
+            (brand_id,),
+        )
+        .fetchone()
+    )
     return None if row is None else row["id"]
 
 
-def insert_user_code(cursor, user_id, brand_id, policy_id, code):
+def increment_issued(policy_id):
+    db.get_db().execute(
+        "update brand_policy set issued = issued + 1 where id = ?",
+        (policy_id,),
+    )
+
+
+def insert_user_code(user_id, brand_id, policy_id, code):
     return (
-        cursor.execute(
+        db.get_db()
+        .execute(
             "insert into user_code (user_id, brand_id, policy_id, code) values (?, ?, ?, ?)",
             (user_id, brand_id, policy_id, code),
-        ).fetchone()
+        )
+        .fetchone()
         is not None
     )
