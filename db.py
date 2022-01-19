@@ -33,6 +33,13 @@ def init_db():
         db.executescript(f.read().decode("utf8"))
 
 
+def load_data():
+    db = get_db()
+
+    db.execute("INSERT INTO brand (admin_id, brand_id) VALUES (1, 1)")
+    db.commit()
+
+
 @click.command("init-db")
 @with_appcontext
 def init_db_command():
@@ -41,7 +48,16 @@ def init_db_command():
     click.echo("Initialized the database.")
 
 
+@click.command("load-data")
+@with_appcontext
+def load_data_command():
+    """Load minimal data for manual local testing."""
+    load_data()
+    click.echo("Loaded data.")
+
+
 def init_app(app):
     # automatically close DB connection when the app stops
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
+    app.cli.add_command(load_data_command)

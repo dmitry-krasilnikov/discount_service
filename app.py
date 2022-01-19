@@ -64,8 +64,9 @@ def generate_codes(brand_id):
 def fetch_code():
     payload = request.get_json()
     # user_id must come from JWT of the user
-    # for the purpose of this PoC it's hardcoded
-    user_id = 1
+    # for the purpose of this PoC it's hardcoded by default
+    # but can be provided as an undocumented "userId" parameter
+    user_id = payload.get("userId") or 1
     brand_id = payload["brandId"]
 
     # we avoid using exceptions here because they are quite slow
@@ -93,7 +94,8 @@ def create_app(config_mapping=None):
         "SECRET_KEY": "dev",
         "DATABASE": os.path.join(app.instance_path, "discount_service.sqlite"),
     }
-    default_config_mapping.update(config_mapping)
+    if config_mapping is not None:
+        default_config_mapping.update(config_mapping)
     app.config.from_mapping(**default_config_mapping)
 
     app.register_blueprint(brand)
