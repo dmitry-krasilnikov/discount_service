@@ -1,25 +1,22 @@
+"""DB query layer.
+
+If there's a need to switch DB back-ends often ORM can help to abstract from DB access.
+For most simple cases raw SQL can be sufficient and easy to understand.
+"""
 import db
 
 
-def brand_exists(cursor, brand_id):
-    return (
-        cursor.execute(
-            "SELECT id FROM brand WHERE brand_id=? AND deleted_at IS NULL",
-            (brand_id),
-        ).fetchone()
-        is not None
+def delete_active_policies(brand_id):
+    db.get_db().execute(
+        "UPDATE brand_policy SET deleted_at = DATETIME('now') WHERE brand_id = ? AND deleted_at IS NULL",
+        (brand_id,),
     )
 
 
-def user_has_code_with_the_brand(cursor, user_id, brand_id):
-    return (
-        cursor.execute(
-            "SELECT id FROM user_code "
-            "LEFT JOIN brand_policy ON user_code.policy_id = brand_policy.id "
-            "WHERE user_id=? AND brand_id=?",
-            (user_id, brand_id),
-        ).fetchone()
-        is not None
+def insert_policy(brand_id, amount, count):
+    db.get_db().execute(
+        "INSERT INTO brand_policy (brand_id, amount, count) VALUES (?, ?, ?)",
+        (brand_id, amount, count),
     )
 
 

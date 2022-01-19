@@ -7,12 +7,14 @@ from flask.cli import with_appcontext
 
 def get_db():
     if "db" not in g:
+        # g.db is a request level context which is usually used for storing such data
         g.db = sqlite3.connect(
             current_app.config["DATABASE"], detect_types=sqlite3.PARSE_DECLTYPES
         )
+        # Row class provides a nice 'dict' like interface to manipulate data
         g.db.row_factory = sqlite3.Row
 
-    # enable foreign key constraints because we rely on them
+    # enable foreign key constraints because we rely on them in our business logic
     g.db.execute("PRAGMA foreign_keys = ON")
     return g.db
 
@@ -40,5 +42,6 @@ def init_db_command():
 
 
 def init_app(app):
+    # automatically close DB connection when the app stops
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
