@@ -23,26 +23,31 @@ There's one brand in the DB with id=1. More cases can be found in `./tests/` dir
 
 ### Set up first discount code policy
 Request: `curl -H 'Content-Type: application/json' -d $'{"amount": 10, "count": 30}' http://localhost:5000/brand/1/policy`
+
 Response: `{"result":"success"}`
 
-### Fetch the code for user
+### Fetch a new code for the user
 Request: `curl -H 'Content-Type: application/json' -d $'{"brandId": 1}' http://localhost:5000/user/codes`
+
 Response: `{"code":"7D0JXVXUCKZNNHL4M25H","result":"success"}`
 
-### Second attempt to fetch the code fails
+### Second attempt to fetch a new code fails
 Request: `curl -H 'Content-Type: application/json' -d $'{"brandId": 1}' http://localhost:5000/user/codes`
+
 Response: `{"msg":"User has already received a code","msg_id":"code_already_received","result":"error"}`
 
 ### Circumvent the restrictions!
 This example shows how we can override hard-coded user_id, only for the sake of this PoC
+
 Request: `curl -H 'Content-Type: application/json' -d $'{"brandId": 1, "userId": 2}' http://localhost:5000/user/codes`
+
 Response: `{"code":"LUOLOS92H1WM7HNLJB3L","result":"success"}`
 
 # Further improvements
 - Implement test/debug only login endpoint to generate JWT for tests
 - Implement JWT support and remove hard-coded `user_id` from `fetch_code` controller
 - Validate empty requests
-- Add posting message to message broker
+- Post messages to the message broker
 - Re-write to FastAPI to achieve asynchronous execution and to be able to consume from message broker and update SQL storage in the same thread
 - Add logging with different levels of severity > stdout so that log collection solutions could fetch them and push into shared storage
 - Refactor everything! (Intentionally skipped to save time and to show TDD-in-process)
