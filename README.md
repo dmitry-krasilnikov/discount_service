@@ -1,3 +1,6 @@
+# Description
+Simple implementation of *discount codes microservice* with *Flask*. This implementation includes *2 API endpoints*, one is to set a code generation policy (generate codes from the brand page) and another one to fetch the new code (customer requests the code from the cart page or any other place). Both endpoints are covered with tests (api to database). The code base has comments where the author deemed them applicable.
+
 # Local setup
 
 ## Requirements
